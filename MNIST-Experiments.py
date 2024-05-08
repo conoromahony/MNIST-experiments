@@ -10,16 +10,25 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import LinearSVC
 from sklearn import decomposition
 
+# To ignore the runtime warnings that appear in the console
+import warnings
+warnings.simplefilter('ignore')
+
+
 def run(x_train, y_train, x_test, y_test, clf):
-    s = time.time()
+    # This function performs a training and test run for a particular model (passed via clf). It
+    # also records the time for each run.
+    start_time = time.time()
     clf.fit(x_train, y_train)
-    e_train = time.time() - s 
-    s = time.time()
+    train_time = time.time() - start_time 
+    start_time = time.time()
     score = clf.score(x_test, y_test)
-    e_test = time.time() - s 
-    print("score = %0.4f (time, train=%8.3f, test=%8.3f)" % (score, e_train, e_test))
+    test_time = time.time() - start_time 
+    print("score = %0.4f (trainimg time=%8.3f, testing time=%8.3f)" % (score, train_time, test_time))
+
 
 def train(x_train, y_train, x_test, y_test):
+    # For each of the models that we want to try out, this function calls the "run" function.
     print("    Nearest centroid          : ", end='')
     run(x_train, y_train, x_test, y_test, NearestCentroid())
     print("    k-NN classifier (k=3)     : ", end='')
@@ -47,35 +56,43 @@ def train(x_train, y_train, x_test, y_test):
     print("    LinearSVM (C=10.0)        : ", end='')
     run(x_train, y_train, x_test, y_test, LinearSVC(C=10.0))
 
-def main():
-    mnist = load_digits()
 
+def main():
+    # Load the MNIST data from the sklearn dataset
+    mnist = load_digits()
     # Split the data into training and test sets
     x_train, x_test, y_train, y_test = train_test_split(mnist.data, mnist.target, test_size=0.25, random_state=42)
-    #x_train = np.load("../data/mnist/mnist_train_vectors.npy").astype("float64")
-    #y_train = np.load("../data/mnist/mnist_train_labels.npy")
-    #x_test = np.load("../data/mnist/mnist_test_vectors.npy").astype("float64")
-    #y_test = np.load("../data/mnist/mnist_test_labels.npy")
 
+    # First, let's work with the raw image data. That is, the raw pixel values (between 0 and 255).
     print("Models trained on raw [0,255] images:")
     train(x_train, y_train, x_test, y_test)
+
+    # Next, let's work with the scaled pixel values. To do this, divide each pixel valueby 255.
     print("Models trained on raw [0,1) images:")
-    train(x_train/256.0, y_train, x_test/256.0, y_test)
+    train(x_train/255.0, y_train, x_test/255.0, y_test)
 
-    m = x_train.mean(axis=0)
-    s = x_train.std(axis=0) + 1e-8
-    x_ntrain = (x_train - m) / s
-    x_ntest  = (x_test - m) / s
-
+    # Next, let's try normalized values. To normalize, we subtract the mean value of a pixel across the dataset and
+    # then divide by the standard deviation. We choose to get the mean and standard deviations from the testing set 
+    # (because it's a larger data set). We are fortunate that the training and testing datasets come from the same 
+    # distribution, so the means and standard deviations will be transferrable. Normalizing will change the appearance 
+    # of the pixels, but not the shape of the objects in each image. This allows us to see if the range of feature 
+    # values (i.e. the range of pixel values) is important. We add a tiny value to the standard deviation to cater 
+    # for situations where the standard deviation is zero (because we cannot later divide by zero).
+    feature_mean = x_train.mean(axis=0)
+    feature_std_dev = x_train.std(axis=0) + 1e-8
+    x_norm_train = (x_train - feature_mean) / feature_std_dev
+    x_norm_test  = (x_test - feature_mean) / feature_std_dev
     print("Models trained on normalized images:")
-    train(x_ntrain, y_train, x_ntest, y_test)
+    train(x_norm_train, y_train, x_norm_test, y_test)
 
-    pca = decomposition.PCA(n_components=15)
-    pca.fit(x_ntrain)
-    x_ptrain = pca.transform(x_ntrain)
-    x_ptest = pca.transform(x_ntest)
-    
+    # Finally, we apply PCA (principle component analysis), keeping the first 32 components. This reduces the feature 
+    # vector from 784 features (the pixels) to 32. We apply PCA to the normalized values from the previous step.
+    pca = decomposition.PCA(n_components=32)
+    pca.fit(x_norm_train)
+    x_pca_train = pca.transform(x_norm_train)
+    x_pca_test = pca.transform(x_norm_test)
     print("Models trained on first 15 PCA components of normalized images:")
-    train(x_ptrain, y_train, x_ptest, y_test)
+    train(x_pca_train, y_train, x_pca_test, y_test)
+
 
 main()
