@@ -17,7 +17,7 @@ One useful aspect of **Decision Trees** is that you can see the steps it takes t
 
 A **Perceptron** is a single-layer neural network that uses no regularization, a linear loss function, and Stochastic Gradient Descent. There are no hidden nodes, with the input nodes being connected directly to the output nodes. When the hyperparameters are tuned, it can provide good accuracy with fast training and very fast classification.
 
-A **Feed Forward Neural Nwetwork** is a multi-layer neural network. I experiment with different node configurations, activation functions, and back propagation approaches. When the hyperparameters are tuned, it can provide very good accuracy with very fast classification, but training time can be quite slow.
+A **Feed Forward Neural Network** is a multi-layer neural network. I experiment with different node configurations, activation functions, and back propagation approaches. When the hyperparameters are tuned, it can provide very good accuracy with very fast classification, but training time can be quite slow.
 
 Note that the scikit-learn library does not include Convolutional Neural Networks, otherwise I would have included them.
 
