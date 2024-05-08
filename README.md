@@ -1,10 +1,17 @@
 # MNIST-experiments
+This repository examines the performance a various approaches to classifying digits from the MNIST data set.
+
+## Introducing the Models
+**Nearest Centroid** is the simplest model. It is a useful baseline. However, it makes a simplistic assumption that does not often bear out in practice: that the classes form a tight group in the feature space and the groups are distant from one another. Training time and classifation time is very fast, as it works with one centroid per class.
+
+**k-Nearest Neighbors** doesn't require training, as the training data set is used to classify new instances. However, classification is slow because of the need to look at every training sample. It performs well if the number of training samples is large relative to the dimensionality of the feature space. 
+
 
 ## Accuracy
 
 |                        | Raw Images | Scaled Images | Normalized Images | 32 PCA Components |
 |------------------------| :--------: | :-----------: | :---------------: | :---------------: |
-| Nearest centroid       | 90.44%     | 90.44%        | 88.67%            | 88.67%            |
+| Nearest Centroid       | 90.44%     | 90.44%        | 88.67%            | 88.67%            |
 | k-NN classifier (k=3)  | 98.67%     | 98.67%        | 96.67%            | 96.67%            |
 | k-NN classifier (k=7)  | **99.33%**     | **99.33%**        | 97.78%            | 96.67%            |
 | Naive Bayes (Gaussian) | 85.56%     | 85.56%        | 77.56%            | 91.56%            |
@@ -18,13 +25,26 @@
 | LinearSVM (C=1.0)      | 96.00%     | 93.11%        | 96.22%            | 95.11%            |
 | LinearSVM (C=10.0)     | 96.67%     | 96.22%        | 95.78%            | 94.89%            |
 
+Nearest Centroid shows an accuracy of 90.44% for both the raw images and the scaled images. This makes sense, as scaling the values by a constant will not change the relationship between the per class centroids. However, normalizing does change the centroid's relationship to one another, bringing the accuracy down to 88.67%.
+
+The 3-Nearest Neighbor classifier shows an accuracy of 98.67% on raw and scaled images. Across the input types, we see a similar pattern to Nearest Centroid, which is not surprising given the approaches are so similar. The 7-Nearest Neighbor classifier produces the best results across the board.
+
+The Gaussian Naive Bayes classifier performs poorly across the board. However, it's performance improves significantly when working with the PCA inputs. This is the only model to improve after using PCA. This is because a Gaussian Naive Bayes classifier assumes the data is independent and forms a normal distribution (where we can estimate the mean and standard deviation from the feature values themselves). PCA is the equivalent of rotating the feature vectors to align with the largest orthogonal directions derived from the data set, thereby ensuring the data is independent. And the gaussian aspect of the classifier implies a normal distribution. This is why the Gaussian Naive Bayes classifier performs so well with PCA data.
+
+The Decision Tree classifier and the various Random Forest classifiers perform similarily across the Raw Image, Scaled Image, and Normalized Image data sets. However, they all perform less well with the PCA data set, because working with the reduced dimensions of the PCA means that some potentially important information is missing.
+
+Of the tree-based classifiers,the single Decision Tree performs least well. The Random Forest classifiers get a big performance improvement when ing from 5 trees to 50 trees, but the performance gains top out somewhere betwee 50 trees and 500 trees, depending on the data set.
+
+We cannot use a Support Vector Machine (SVM), because it is designed for use with binary classification and we have 10 classes. Therefore, we use 10 SVMs, one to classify 0 versus the rest (i.e. 1-9), the next to classift 1 versus the rest (i.e. 0 and 2-9), and so on. 
+
+
 ## Training Time
 
 |                        | Raw Images | Scaled Images | Normalized Images | 32 PCA Components |
 |------------------------| :--------: | :-----------: | :---------------: | :---------------: |
-| Nearest centroid       | 0.001      | 0.001         | 0.001             | 0.001             |
-| k-NN classifier (k=3)  | 0.000      | 0.000         | 0.000             | 0.000             |
-| k-NN classifier (k=7)  | 0.001      | 0.000         | 0.000             | 0.000             |
+| Nearest Centroid       | 0.001      | 0.001         | 0.001             | 0.001             |
+| k-NN classifier (k=3)  | **0.000**      | **0.000**         | ****0.000**             | **0.000**             |
+| k-NN classifier (k=7)  | 0.001      | **0.000**         | **0.000**             | **0.000**             |
 | Naive Bayes (Gaussian) | 0.003      | 0.002         | 0.001             | 0.001             |
 | Decision Tree          | 0.014      | 0.012         | 0.012             | 0.029             |
 | Random Forest (t=5)    | 0.011      | 0.010         | 0.010             | 0.019             |
@@ -38,59 +58,19 @@
 
 ## Testing Time
 
-Models trained on raw [0,255] images:
-    Nearest centroid          : score = 0.9044 (trainimg time=   0.001, testing time=   0.006)
-    k-NN classifier (k=3)     : score = 0.9867 (trainimg time=   0.000, testing time=   0.021)
-    k-NN classifier (k=7)     : score = 0.9933 (trainimg time=   0.001, testing time=   0.021)
-    Naive Bayes (Gaussian)    : score = 0.8556 (trainimg time=   0.003, testing time=   0.001)
-    Decision Tree             : score = 0.8622 (trainimg time=   0.014, testing time=   0.000)
-    Random Forest (trees=  5) : score = 0.9200 (trainimg time=   0.011, testing time=   0.001)
-    Random Forest (trees= 50) : score = 0.9733 (trainimg time=   0.099, testing time=   0.005)
-    Random Forest (trees=500) : score = 0.9756 (trainimg time=   0.912, testing time=   0.044)
-    Random Forest (trees=1000): score = 0.9756 (trainimg time=   1.818, testing time=   0.087)
-    LinearSVM (C=0.01)        : score = 0.9689 (trainimg time=   0.063, testing time=   0.001)
-    LinearSVM (C=0.1)         : score = 0.9711 (trainimg time=   0.065, testing time=   0.000)
-    LinearSVM (C=1.0)         : score = 0.9600 (trainimg time=   0.062, testing time=   0.000)
-    LinearSVM (C=10.0)        : score = 0.9667 (trainimg time=   0.063, testing time=   0.000)
-Models trained on raw [0,1) images:
-    Nearest centroid          : score = 0.9044 (trainimg time=   0.001, testing time=   0.000)
-    k-NN classifier (k=3)     : score = 0.9867 (trainimg time=   0.000, testing time=   0.016)
-    k-NN classifier (k=7)     : score = 0.9933 (trainimg time=   0.000, testing time=   0.017)
-    Naive Bayes (Gaussian)    : score = 0.8556 (trainimg time=   0.002, testing time=   0.001)
-    Decision Tree             : score = 0.8556 (trainimg time=   0.012, testing time=   0.000)
-    Random Forest (trees=  5) : score = 0.9133 (trainimg time=   0.010, testing time=   0.001)
-    Random Forest (trees= 50) : score = 0.9711 (trainimg time=   0.098, testing time=   0.005)
-    Random Forest (trees=500) : score = 0.9756 (trainimg time=   0.903, testing time=   0.042)
-    Random Forest (trees=1000): score = 0.9756 (trainimg time=   1.795, testing time=   0.085)
-    LinearSVM (C=0.01)        : score = 0.7467 (trainimg time=   0.008, testing time=   0.001)
-    LinearSVM (C=0.1)         : score = 0.8867 (trainimg time=   0.012, testing time=   0.000)
-    LinearSVM (C=1.0)         : score = 0.9311 (trainimg time=   0.022, testing time=   0.001)
-    LinearSVM (C=10.0)        : score = 0.9622 (trainimg time=   0.065, testing time=   0.000)
-Models trained on normalized images:
-    Nearest centroid          : score = 0.8867 (trainimg time=   0.001, testing time=   0.000)
-    k-NN classifier (k=3)     : score = 0.9667 (trainimg time=   0.000, testing time=   0.014)
-    k-NN classifier (k=7)     : score = 0.9778 (trainimg time=   0.000, testing time=   0.018)
-    Naive Bayes (Gaussian)    : score = 0.7756 (trainimg time=   0.001, testing time=   0.001)
-    Decision Tree             : score = 0.8622 (trainimg time=   0.012, testing time=   0.000)
-    Random Forest (trees=  5) : score = 0.9311 (trainimg time=   0.010, testing time=   0.001)
-    Random Forest (trees= 50) : score = 0.9800 (trainimg time=   0.097, testing time=   0.005)
-    Random Forest (trees=500) : score = 0.9756 (trainimg time=   0.900, testing time=   0.042)
-    Random Forest (trees=1000): score = 0.9756 (trainimg time=   1.808, testing time=   0.085)
-    LinearSVM (C=0.01)        : score = 0.9600 (trainimg time=   0.040, testing time=   0.000)
-    LinearSVM (C=0.1)         : score = 0.9667 (trainimg time=   0.085, testing time=   0.000)
-    LinearSVM (C=1.0)         : score = 0.9622 (trainimg time=   0.118, testing time=   0.000)
-    LinearSVM (C=10.0)        : score = 0.9578 (trainimg time=   0.107, testing time=   0.000)
-Models trained on first 15 PCA components of normalized images:
-    Nearest centroid          : score = 0.8867 (trainimg time=   0.001, testing time=   0.001)
-    k-NN classifier (k=3)     : score = 0.9667 (trainimg time=   0.000, testing time=   0.014)
-    k-NN classifier (k=7)     : score = 0.9667 (trainimg time=   0.000, testing time=   0.017)
-    Naive Bayes (Gaussian)    : score = 0.9156 (trainimg time=   0.001, testing time=   0.001)
-    Decision Tree             : score = 0.8422 (trainimg time=   0.029, testing time=   0.000)
-    Random Forest (trees=  5) : score = 0.8756 (trainimg time=   0.019, testing time=   0.001)
-    Random Forest (trees= 50) : score = 0.9667 (trainimg time=   0.210, testing time=   0.005)
-    Random Forest (trees=500) : score = 0.9644 (trainimg time=   1.776, testing time=   0.044)
-    Random Forest (trees=1000): score = 0.9644 (trainimg time=   3.401, testing time=   0.087)
-    LinearSVM (C=0.01)        : score = 0.9467 (trainimg time=   0.024, testing time=   0.001)
-    LinearSVM (C=0.1)         : score = 0.9600 (trainimg time=   0.062, testing time=   0.000)
-    LinearSVM (C=1.0)         : score = 0.9511 (trainimg time=   0.083, testing time=   0.000)
-    LinearSVM (C=10.0)        : score = 0.9489 (trainimg time=   0.077, testing time=   0.000)
+|                        | Raw Images | Scaled Images | Normalized Images | 32 PCA Components |
+|------------------------| :--------: | :-----------: | :---------------: | :---------------: |
+| Nearest Centroid       | 0.006      | **0.000**         | **0.000**             | 0.001             |
+| k-NN classifier (k=3)  | 0.021      | 0.016         | 0.014             | 0.014             |
+| k-NN classifier (k=7)  | 0.021      | 0.017         | 0.018             | 0.017             |
+| Naive Bayes (Gaussian) | 0.001      | 0.001         | 0.001             | 0.001             |
+| Decision Tree          | **0.000**      | **0.000**         | **0.000**             | **0.000**             |
+| Random Forest (t=5)    | 0.001      | 0.001         | 0.001             | 0.001             |
+| Random Forest (t=50)   | 0.005      | 0.005         | 0.005             | 0.005             |
+| Random Forest (t=500)  | 0.044      | 0.042         | 0.042             | 0.044             |
+| Random Forest (t=1000) | 0.087      | 0.085         | 0.085             | 0.087             |
+| LinearSVM (C=0.01)     | 0.001      | 0.001         | **0.000**             | 0.001             |
+| LinearSVM (C=0.1)      | **0.000**      | **0.000**         | **0.000**             | **0.000**             |
+| LinearSVM (C=1.0)      | **0.000**      | 0.001         | **0.000**             | **0.000**             |
+| LinearSVM (C=10.0)     | **0.000**      | **0.000**         | **0.000**             | **0.000**             |
+

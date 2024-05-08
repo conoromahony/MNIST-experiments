@@ -69,7 +69,7 @@ def main():
 
     # Next, let's work with the scaled pixel values. To do this, divide each pixel valueby 255.
     print("Models trained on raw [0,1) images:")
-    train(x_train/255.0, y_train, x_test/255.0, y_test)
+    train(x_train/255.0, y_train, x_test/256.0, y_test)
 
     # Next, let's try normalized values. To normalize, we subtract the mean value of a pixel across the dataset and
     # then divide by the standard deviation. We choose to get the mean and standard deviations from the testing set 
