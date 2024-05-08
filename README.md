@@ -2,11 +2,11 @@
 
 ## Accuracy
 
-|                        | Raw Images | Scales Images | Normalized Images | 32 PCA Components |
-|------------------------|------------|---------------|-------------------|-------------------|
+|                        | Raw Images | Scaled Images | Normalized Images | 32 PCA Components |
+| :--------------------: | :--------: | :-----------: | :---------------: | :---------------: |
 | Nearest centroid       | 90.44%     | 90.44%        | 88.67%            | 88.67%            |
 | k-NN classifier (k=3)  | 98.67%     | 98.67%        | 96.67%            | 96.67%            |
-| k-NN classifier (k=7)  | 99.33%     | 99.33%        | 97.78%            | 96.67%            |
+| k-NN classifier (k=7)  | **99.33%**     | **99.33%**        | 97.78%            | 96.67%            |
 | Naive Bayes (Gaussian) | 85.56%     | 85.56%        | 77.56%            | 91.56%            |
 | Decision Tree          | 86.22%     | 85.56%        | 86.22%            | 84.22%            |
 | Random Forest (t=  5)  | 92.00%     | 91.33%        | 93.11%            | 87.56%            |
