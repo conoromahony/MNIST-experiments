@@ -8,6 +8,8 @@ from sklearn.naive_bayes import GaussianNB, MultinomialNB
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import LinearSVC
+from sklearn.linear_model import Perceptron
+from sklearn.neural_network import MLPClassifier
 from sklearn import decomposition
 
 # To ignore the runtime warnings that appear in the console
@@ -24,37 +26,49 @@ def run(x_train, y_train, x_test, y_test, clf):
     start_time = time.time()
     score = clf.score(x_test, y_test)
     test_time = time.time() - start_time 
-    print("score = %0.4f (trainimg time=%8.3f, testing time=%8.3f)" % (score, train_time, test_time))
+    print("score = %0.4f (training time=%8.3f, testing time=%8.3f)" % (score, train_time, test_time))
 
 
 def train(x_train, y_train, x_test, y_test):
     # For each of the models that we want to try out, this function calls the "run" function.
-    print("    Nearest centroid          : ", end='')
+    print("    Nearest centroid               : ", end='')
     run(x_train, y_train, x_test, y_test, NearestCentroid())
-    print("    k-NN classifier (k=3)     : ", end='')
+    print("    k-NN classifier (k=3)          : ", end='')
     run(x_train, y_train, x_test, y_test, KNeighborsClassifier(n_neighbors=3))
-    print("    k-NN classifier (k=7)     : ", end='')
+    print("    k-NN classifier (k=7)          : ", end='')
     run(x_train, y_train, x_test, y_test, KNeighborsClassifier(n_neighbors=7))
-    print("    Naive Bayes (Gaussian)    : ", end='')
+    print("    Naive Bayes (Gaussian)         : ", end='')
     run(x_train, y_train, x_test, y_test, GaussianNB())
-    print("    Decision Tree             : ", end='')
+    print("    Decision Tree                  : ", end='')
     run(x_train, y_train, x_test, y_test, DecisionTreeClassifier())
-    print("    Random Forest (trees=  5) : ", end='')
+    print("    Random Forest (trees=  5)      : ", end='')
     run(x_train, y_train, x_test, y_test, RandomForestClassifier(n_estimators=5))
-    print("    Random Forest (trees= 50) : ", end='')
+    print("    Random Forest (trees= 50)      : ", end='')
     run(x_train, y_train, x_test, y_test, RandomForestClassifier(n_estimators=50))
-    print("    Random Forest (trees=500) : ", end='')
+    print("    Random Forest (trees=500)      : ", end='')
     run(x_train, y_train, x_test, y_test, RandomForestClassifier(n_estimators=500))
-    print("    Random Forest (trees=1000): ", end='')
+    print("    Random Forest (trees=1000)     : ", end='')
     run(x_train, y_train, x_test, y_test, RandomForestClassifier(n_estimators=1000))
-    print("    LinearSVM (C=0.01)        : ", end='')
+    print("    LinearSVM (C=0.01)             : ", end='')
     run(x_train, y_train, x_test, y_test, LinearSVC(C=0.01))
-    print("    LinearSVM (C=0.1)         : ", end='')
+    print("    LinearSVM (C=0.1)              : ", end='')
     run(x_train, y_train, x_test, y_test, LinearSVC(C=0.1))
-    print("    LinearSVM (C=1.0)         : ", end='')
+    print("    LinearSVM (C=1.0)              : ", end='')
     run(x_train, y_train, x_test, y_test, LinearSVC(C=1.0))
-    print("    LinearSVM (C=10.0)        : ", end='')
+    print("    LinearSVM (C=10.0)             : ", end='')
     run(x_train, y_train, x_test, y_test, LinearSVC(C=10.0))
+    print("    Percentron                     : ", end='')
+    run(x_train, y_train, x_test, y_test, Perceptron(tol=1e-3, eta0=0.1))
+    print("    Feed Forward Network (64,ReLU) : ", end='')
+    run(x_train, y_train, x_test, y_test, MLPClassifier(hidden_layer_sizes=(64,10), activation='relu', solver='adam'))
+    print("    Feed Forward Network (256,ReLU): ", end='')
+    run(x_train, y_train, x_test, y_test, MLPClassifier(hidden_layer_sizes=(256,10), activation='relu', solver='adam'))
+    print("    Feed Forward Network (256,Sigm): ", end='')
+    run(x_train, y_train, x_test, y_test, MLPClassifier(hidden_layer_sizes=(256,10), activation='logistic', solver='adam'))
+    print("    Feed Forward Network (256,SGD) : ", end='')
+    run(x_train, y_train, x_test, y_test, MLPClassifier(hidden_layer_sizes=(256,10), activation='relu', solver='sgd'))
+    print("    Feed Forward Network (512,ReLU): ", end='')
+    run(x_train, y_train, x_test, y_test, MLPClassifier(hidden_layer_sizes=(512,10), activation='relu', solver='adam'))
 
 
 def main():
