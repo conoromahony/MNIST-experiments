@@ -1,26 +1,24 @@
 # MNIST-experiments
 
-Accuracy
+## Accuracy
 
+|                        | Raw Images | Scales Images | Normalized Images | 32 PCA Components |
+|------------------------|------------|---------------|-------------------|-------------------|
+| Nearest centroid       | 90.44%     | 90.44%        | 88.67%            | 88.67%            |
+| k-NN classifier (k=3)  | 98.67%     | 98.67%        | 96.67%            | 96.67%            |
+| k-NN classifier (k=7)  | 99.33%     | 99.33%        | 97.78%            | 96.67%            |
+| Naive Bayes (Gaussian) | 85.56%     | 85.56%        | 77.56%            | 91.56%            |
+| Decision Tree          | 86.22%     | 85.56%        | 86.22%            | 84.22%            |
+| Random Forest (t=  5)  | 92.00%     | 91.33%        | 93.11%            | 87.56%            |
+| Random Forest (t= 50)  | 97.33%     | 97.11%        | 98.00%            | 96.67%            |
+| Random Forest (t=500)  | 97.56%     | 97.56%        | 97.56%            | 96.44%            |
+| Random Forest (t=1000) | 97.56%     | 97.56%        | 97.56%            | 96.44%            |
+| LinearSVM (C=0.01)     | 96.89%     | 74.67%        | 96.00%            | 94.67%            |
+| LinearSVM (C=0.1)      | 97.11%     | 88.67%        | 96.67%            | 96.00%            |
+| LinearSVM (C=1.0)      | 96.00%     | 93.11%        | 96.22%            | 95.11%            |
+| LinearSVM (C=10.0)     | 96.67%     | 96.22%        | 95.78%            | 94.89%            |
 
-|                            | Raw Images | Scales Images | Normalized Images | 32 PCA Components |
-|----------------------------|------------|---------------|-------------------|-------------------|
-| Nearest centroid           | 90.44%     | 90.44%        | 88.67%            | 88.67%            |
-| k-NN classifier (k=3)      | 98.67%     | 98.67%        | 96.67%            | 96.67%            |
-| k-NN classifier (k=7)      | 99.33%     | 99.33%        | 97.78%            | 96.67%            |
-| Naive Bayes (Gaussian)     | 85.56%     | 85.56%        | 77.56%            | 91.56%            |
-| Decision Tree              | 86.22%     | 85.56%        | 86.22%            | 84.22%            |
-| Random Forest (trees=  5)  | 92.00%     | 91.33%        | 93.11%            | 87.56%            |
-| Random Forest (trees= 50)  | 97.33%     | 97.11%        | 98.00%            | 96.67%            |
-| Random Forest (trees=500)  | 97.56%     | 97.56%        | 97.56%            | 96.44%            |
-| Random Forest (trees=1000) | 97.56%     | 97.56%        | 97.56%            | 96.44%            |
-| LinearSVM (C=0.01)         | 96.89%     | 74.67%        | 96.00%            | 94.67%            |
-| LinearSVM (C=0.1)          | 97.11%     | 88.67%        | 96.67%            | 96.00%            |
-| LinearSVM (C=1.0)          | 96.00%     | 93.11%        | 96.22%            | 95.11%            |
-| LinearSVM (C=10.0)         | 96.67%     | 96.22%        | 95.78%            | 94.89%            |
-
-
-Accuracy
+## Training Time
 
 Models trained on raw [0,255] images:
     Nearest centroid          : score = 0.9044 (trainimg time=   0.001, testing time=   0.006)
