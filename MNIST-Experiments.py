@@ -1,5 +1,7 @@
 import time
 import numpy as np
+from sklearn.datasets import load_digits
+from sklearn.model_selection import train_test_split
 from sklearn.neighbors import NearestCentroid
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB, MultinomialNB
@@ -46,10 +48,14 @@ def train(x_train, y_train, x_test, y_test):
     run(x_train, y_train, x_test, y_test, LinearSVC(C=10.0))
 
 def main():
-    x_train = np.load("../data/mnist/mnist_train_vectors.npy").astype("float64")
-    y_train = np.load("../data/mnist/mnist_train_labels.npy")
-    x_test = np.load("../data/mnist/mnist_test_vectors.npy").astype("float64")
-    y_test = np.load("../data/mnist/mnist_test_labels.npy")
+    mnist = load_digits()
+
+    # Split the data into training and test sets
+    x_train, x_test, y_train, y_test = train_test_split(mnist.data, mnist.target, test_size=0.25, random_state=42)
+    #x_train = np.load("../data/mnist/mnist_train_vectors.npy").astype("float64")
+    #y_train = np.load("../data/mnist/mnist_train_labels.npy")
+    #x_test = np.load("../data/mnist/mnist_test_vectors.npy").astype("float64")
+    #y_test = np.load("../data/mnist/mnist_test_labels.npy")
 
     print("Models trained on raw [0,255] images:")
     train(x_train, y_train, x_test, y_test)
